@@ -1,0 +1,46 @@
+# I2C configuration
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+# IS31FL3218 component
+is31fl3218:
+  - id: led_controller
+    address: 0x54  # Default address
+
+# Individual light entities
+light:
+  - platform: is31fl3218
+    is31fl3218_id: led_controller
+    id: led_0
+    name: "LED Channel 0"
+    channel: 0
+    
+  - platform: is31fl3218
+    is31fl3218_id: led_controller
+    id: led_1
+    name: "LED Channel 1"
+    channel: 1
+    
+  - platform: is31fl3218
+    is31fl3218_id: led_controller
+    id: led_2
+    name: "LED Channel 2"
+    channel: 2
+    
+  # You can add all 18 channels (0-17)
+  - platform: is31fl3218
+    is31fl3218_id: led_controller
+    id: led_17
+    name: "LED Channel 17"
+    channel: 17
+
+# Optional: Create light groups for easier control
+# light:
+#   - platform: group
+#     name: "RGB Group 1"
+#     lights:
+#       - led_0  # Red
+#       - led_1  # Green
+#       - led_2  # Blue
