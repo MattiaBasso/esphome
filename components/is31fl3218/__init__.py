@@ -12,7 +12,11 @@ IS31FL3218 = is31fl3218_ns.class_(
 
 MULTI_CONF = True
 CONFIG_SCHEMA = (
-    cv.Schema({cv.GenerateID(): cv.declare_id(IS31FL3218)})
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(IS31FL3218),
+        }
+    )
     .extend(cv.COMPONENT_SCHEMA)
     .extend(i2c.i2c_device_schema(0x01))
 )
