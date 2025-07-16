@@ -4,15 +4,21 @@
 namespace esphome {
 namespace is31fl3218 {
 
-const uint8_t INPUT_REG = 0;
-const uint8_t OUTPUT_REG = 1;
-const uint8_t INVERT_REG = 2;
-const uint8_t CONFIG_REG = 3;
+const uint8_t SHUTDOWN_REG = 0x00;
+const uint8_t UPDATE_REG = 0x16;
+const uint8_t RESET_REG = 0x17;
 
 static const char *TAG = "is31fl3218.component";
 
 void IS31FL3218::setup() {
+    // I2C device initialization is typically done here.
+    // Note that a number of read/write methods are available in the I2CDevice
+    // class. See "i2c/i2c.h" for details.
     ESP_LOGCONFIG(TAG, "Setting up IS31FL3218...");
+    if (this->write(0x00, RESET_REG) != i2c::ERROR_OK) {
+    this->mark_failed(); // Mark the component as failed if communication fails
+    return;
+    }
     
     this->pwm_amounts_.resize(this->num_chips_ * N_CHANNELS_PER_CHIP, 0);
     
