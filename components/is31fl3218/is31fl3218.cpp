@@ -7,6 +7,9 @@ namespace is31fl3218 {
 const uint8_t SHUTDOWN_REG = 0x00;
 const uint8_t UPDATE_REG = 0x16;
 const uint8_t RESET_REG = 0x17;
+const uint8_t LED_CTRL_REG_1 = 0x13;
+const uint8_t LED_CTRL_REG_2 = 0x14;
+const uint8_t LED_CTRL_REG_3 = 0x15;
 
 static const char *TAG = "is31fl3218.component";
 
@@ -15,13 +18,22 @@ void IS31FL3218::setup() {
     // Note that a number of read/write methods are available in the I2CDevice
     // class. See "i2c/i2c.h" for details.
     ESP_LOGCONFIG(TAG, "Setting up IS31FL3218...");
-    if (this->write(0x00, RESET_REG) != i2c::ERROR_OK) {
-    this->mark_failed(); // Mark the component as failed if communication fails
-    return;
+    if (this->write(RESET_REG, 0x00) != i2c::ERROR_OK) {
+        this->mark_failed(); // Mark the component as failed if communication fails
+        return;
     }
-    
-    this->pwm_amounts_.resize(this->num_chips_ * N_CHANNELS_PER_CHIP, 0);
-    
+
+    if (this->write(SHUTDWN_REG, 0x01) != i2c::ERROR_OK) {
+        this->mark_failed(); // Mark the component as failed if communication fails
+        return;
+    }
+
+    if (this->write(LED_CTRL_REG_1, 0x3F) != i2c::ERROR_OK) && 
+       (this->write(LED_CTRL_REG_2, 0x3F) != i2c::ERROR_OK) && 
+       (this->write(LED_CTRL_REG_3, 0x3F) != i2c::ERROR_OK){
+        this->mark_failed(); // Mark the component as failed if communication fails
+        return;
+    }    
     ESP_LOGCONFIG(TAG, "Done setting up IS31FL3218 component.");
 }
 
@@ -38,8 +50,6 @@ void IS31FL3218::dump_config(){
 }
 
 void IS31FL3218::set_channel_value(uint16_t channel, uint16_t value) {
-  if (channel >= this->num_chips_ * N_CHANNELS_PER_CHIP)
-    return;
   if (this->pwm_amounts_[channel] != value) {
     this->update_ = true;
   }
