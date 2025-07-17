@@ -49,10 +49,6 @@ void IS31FL3218Component::dump_config(){
     ESP_LOGCONFIG(TAG, "IS31FL3218");
 }
 
-void IS31FL3218Output::write_state(float state){
-
-}
-
 void IS31FL3218Output::dump_config() {
     ESP_LOGCONFIG(TAG, "Empty float output");
 }
