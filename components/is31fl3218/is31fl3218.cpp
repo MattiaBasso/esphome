@@ -10,6 +10,7 @@ uint8_t RESET_REG = 0x17;
 uint8_t LED_CTRL_REG_1 = 0x13;
 uint8_t LED_CTRL_REG_2 = 0x14;
 uint8_t LED_CTRL_REG_3 = 0x15;
+
 uint8_t LDR_ON = 0x3F;
 
 static const char *TAG = "is31fl3218.component";
