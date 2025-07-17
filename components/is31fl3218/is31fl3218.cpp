@@ -11,6 +11,9 @@ const uint8_t LED_CTRL_REG_1 = 0x13;
 const uint8_t LED_CTRL_REG_2 = 0x14;
 const uint8_t LED_CTRL_REG_3 = 0x15;
 
+static const uint8_t LDR_OFF = 0x00;
+static const uint8_t LDR_ON = 0x3F;
+
 static const char *TAG = "is31fl3218.component";
 
 void IS31FL3218::setup() {
@@ -23,14 +26,14 @@ void IS31FL3218::setup() {
         return;
     }
 
-    if (this->write(SHUTDWN_REG, 0x01) != i2c::ERROR_OK) {
+    if (this->write(SHUTDOWN_REG, 0x01) != i2c::ERROR_OK) {
         this->mark_failed(); // Mark the component as failed if communication fails
         return;
     }
 
-    if (this->write(LED_CTRL_REG_1, 0x3F) != i2c::ERROR_OK) && 
+    if ((this->write(LED_CTRL_REG_1, 0x3F) != i2c::ERROR_OK) && 
        (this->write(LED_CTRL_REG_2, 0x3F) != i2c::ERROR_OK) && 
-       (this->write(LED_CTRL_REG_3, 0x3F) != i2c::ERROR_OK){
+       (this->write(LED_CTRL_REG_3, 0x3F) != i2c::ERROR_OK)){
         this->mark_failed(); // Mark the component as failed if communication fails
         return;
     }    
@@ -43,17 +46,6 @@ void IS31FL3218::loop() {
 
 void IS31FL3218::dump_config(){
     ESP_LOGCONFIG(TAG, "IS31FL3218");
-    LOG_I2C_DEVICE(this)
-    if (this->is_failed()) {
-        ESP_LOGE(TAG, "Communication with IS31FL3218 failed!");
-    }
-}
-
-void IS31FL3218::set_channel_value(uint16_t channel, uint16_t value) {
-  if (this->pwm_amounts_[channel] != value) {
-    this->update_ = true;
-  }
-  this->pwm_amounts_[channel] = value;
 }
 
 }  // namespace is31fl3218
