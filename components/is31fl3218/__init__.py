@@ -6,15 +6,14 @@ from esphome.const import CONF_ID
 DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
 
-is31fl3218_ns = cg.esphome_ns.namespace("is31fl3218")
-IS31FL3218 = is31fl3218_ns.class_("IS31FL3218", cg.Component, i2c.I2CDevice)
-IS31FL3218Channel = is31fl3218_ns.class_("IS31FL3218Channel", output.FloatOutput)
+is31fl3218component_ns = cg.esphome_ns.namespace("is31fl3218")
+IS31FL3218Component = is31fl3218component_ns.class_("IS31FL3218Component", cg.Component, i2c.I2CDevice)
 
 MULTI_CONF = True
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(IS31FL3218),
+            cv.GenerateID(): cv.declare_id(IS31FL3218Component),
         }
     )
     .extend(cv.COMPONENT_SCHEMA)

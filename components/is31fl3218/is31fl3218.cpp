@@ -15,7 +15,9 @@ uint8_t LDR_ON = 0x3F;
 
 static const char *TAG = "is31fl3218.component";
 
-void IS31FL3218::setup() {
+// static const char *TAG = "is31fl3218.output";
+
+void IS31FL3218Component::setup() {
     // I2C device initialization is typically done here.
     // Note that a number of read/write methods are available in the I2CDevice
     // class. See "i2c/i2c.h" for details.
@@ -39,12 +41,20 @@ void IS31FL3218::setup() {
     ESP_LOGCONFIG(TAG, "Done setting up IS31FL3218 component.");
 }
 
-void IS31FL3218::loop() {
+void IS31FL3218Component::loop() {
 
 }
 
-void IS31FL3218::dump_config(){
+void IS31FL3218Component::dump_config(){
     ESP_LOGCONFIG(TAG, "IS31FL3218");
+}
+
+void IS31FL3218Output::write_state(float state){
+
+}
+
+void IS31FL3218Output::dump_config() {
+    ESP_LOGCONFIG(TAG, "Empty float output");
 }
 
 }  // namespace is31fl3218
