@@ -32,15 +32,14 @@ class IS31FL3218Component : public Component, public i2c::I2CDevice {
 };
 
 class IS31FL3218Channel : public output::FloatOutput {
- public:
-  IS31FL3218Channel(IS31FL3218Component *parent, uint8_t channel) 
-    : parent_(parent), channel_(channel) {}
-  
+  public:
+    IS31FL3218Channel(IS31FL3218Component *parent, uint8_t channel): parent_(parent), channel_(channel) {}
+
   void write_state(float state) override;
   
- protected:
-  IS31FL3218Component *parent_;
-  uint8_t channel_;
+  protected:
+    IS31FL3218Component *parent_;
+    uint8_t channel_;
 };
 
 }  // namespace is31fl3218
