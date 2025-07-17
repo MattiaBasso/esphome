@@ -1,20 +1,26 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import output
-from esphome.const import CONF_CHANNEL, CONF_ID
-from . import IS31FL3218Component, IS31FL3218Channel
+from esphome.components import i2c
+from esphome.const import CONF_ID
 
-DEPENDENCIES = ["is31fl3218"]
+DEPENDENCIES = ["i2c"]
+MULTI_CONF = True
 
-CONFIG_SCHEMA = output.FLOAT_OUTPUT_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(IS31FL3218Channel),
-    cv.Required(CONF_CHANNEL): cv.int_range(min=1, max=18),
-    cv.Required("is31fl3218_id"): cv.use_id(IS31FL3218Component),
-})
+is31fl3218_ns = cg.esphome_ns.namespace("empty_float_output")
+IS31FL3218 = is31fl3218_ns.class_(
+    "IS31FL3218", output.FloatOutput, cg.Component
+)
+
+CONFIG_SCHEMA = output.FLOAT_OUTPUT_SCHEMA.extend(
+    {
+        cv.Required(CONF_ID): cv.declare_id(IS31FL3218),
+    }
+).extend(cv.COMPONENT_SCHEMA).extend(i2c.i2c_device_schema(0x54))
+
 
 async def to_code(config):
-    parent = await cg.get_variable(config["is31fl3218_id"])
-    channel = config[CONF_CHANNEL] - 1  # Convert to 0-based indexing
-    var = cg.new_Pvariable(config[CONF_ID], parent, channel)
+    var = cg.new_Pvariable(config[CONF_ID])
     await output.register_output(var, config)
-    return var
+    await i2c.register_i2c_device(var, config)
+    await cg.register_component(var, config)
