@@ -23,7 +23,7 @@ const uint8_t IS31FL3218_RESET_COMMAND = 0x00;
 const uint8_t IS31FL3218_UPDATE_COMMAND = 0x00;
 
 // --- Channel Control Register Values ---
-const uint8_t IS31FL3218_CHANNEL_REGISTER_ON = 0x3f;
+const uint8_t IS31FL3218_CHANNEL_REGISTER_ON = 0x30;
 uint8_t IS31FL3218_CHANNEL_OFF = 0x00;
 uint8_t IS31FL3218_CHANNEL_ON = 0x01;
 
