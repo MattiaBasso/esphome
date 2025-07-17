@@ -8,113 +8,87 @@ namespace is31fl3218 {
 
 static const char *const TAG = "is31fl3218";
 
-// * marks register defaults
-// 0*: Register auto increment disabled, 1: Register auto increment enabled
-const uint8_t IS31FL3218_MODE1_AI2 = (1 << 7);
-// 0*: don't auto increment bit 1, 1: auto increment bit 1
-const uint8_t IS31FL3218_MODE1_AI1 = (1 << 6);
-// 0*: don't auto increment bit 0, 1: auto increment bit 0
-const uint8_t IS31FL3218_MODE1_AI0 = (1 << 5);
-// 0: normal mode, 1*: low power mode, osc off
-const uint8_t IS31FL3218_MODE1_SLEEP = (1 << 4);
-// 0*: device doesn't respond to i2c bus sub-address 1, 1: responds
-const uint8_t IS31FL3218_MODE1_SUB1 = (1 << 3);
-// 0*: device doesn't respond to i2c bus sub-address 2, 1: responds
-const uint8_t IS31FL3218_MODE1_SUB2 = (1 << 2);
-// 0*: device doesn't respond to i2c bus sub-address 3, 1: responds
-const uint8_t IS31FL3218_MODE1_SUB3 = (1 << 1);
-// 0: device doesn't respond to i2c all-call 3, 1*: responds to all-call
-const uint8_t IS31FL3218_MODE1_ALLCALL = (1 << 0);
+// --- IS31FL3218 Register Map ---
+const uint8_t IS31FL3218_REG_SHUTDOWN = 0x00;
+const uint8_t IS31FL3218_REG_CONTROL_1 = 0x13;
+const uint8_t IS31FL3218_REG_CONTROL_2 = 0x14;
+const uint8_t IS31FL3218_REG_CONTROL_3 = 0x15;
+const uint8_t IS31FL3218_REG_UPDATE = 0x16;
+const uint8_t IS31FL3218_REG_RESET = 0x17;
 
-// 0*: Group dimming, 1: Group blinking
-const uint8_t IS31FL3218_MODE2_DMBLNK = (1 << 5);
-// 0*: Output change on Stop command, 1: Output change on ACK
-const uint8_t IS31FL3218_MODE2_OCH = (1 << 3);
-// 0*: WDT disabled, 1: WDT enabled
-const uint8_t IS31FL3218_MODE2_WDTEN = (1 << 2);
-// WDT timeouts
-const uint8_t IS31FL3218_MODE2_WDT_5MS = (0 << 0);
-const uint8_t IS31FL3218_MODE2_WDT_15MS = (1 << 0);
-const uint8_t IS31FL3218_MODE2_WDT_25MS = (2 << 0);
-const uint8_t IS31FL3218_MODE2_WDT_35MS = (3 << 0);
+// --- Control Register Values ---
+const uint8_t IS31FL3218_SHUTDOWN_MODE = 0x00;
+const uint8_t IS31FL3218_NORMAL_MODE = 0x01;
+const uint8_t IS31FL3218_RESET_COMMAND = 0x00;
+const uint8_t IS31FL3218_UPDATE_COMMAND = 0x00;
 
-// --- Special function ---
-// Call address to perform software reset, no devices will ACK
-const uint8_t IS31FL3218_SWRST_ADDR = 0x96;  //(0x4b 7-bit addr + ~W)
-const uint8_t IS31FL3218_SWRST_SEQ[2] = {0xa5, 0x5a};
-
-// --- Registers ---2
-// Mode register 1
-const uint8_t IS31FL3218_REG_MODE1 = 0x00;
-// Mode register 2
-const uint8_t IS31FL3218_REG_MODE2 = 0x01;
-// PWM0
-const uint8_t IS31FL3218_REG_PWM0 = 0x02;
-// Group PWM
-const uint8_t IS31FL3218_REG_GROUPPWM = 0x0a;
-// Group Freq
-const uint8_t IS31FL3218_REG_GROUPFREQ = 0x0b;
-// LEDOUTx registers
-const uint8_t IS31FL3218_REG_LEDOUT0 = 0x0c;
-const uint8_t IS31FL3218_REG_LEDOUT1 = 0x0d;
-// Sub-address registers
-const uint8_t IS31FL3218_REG_SUBADR1 = 0x0e;  // default: 0x92 (8-bit addr)
-const uint8_t IS31FL3218_REG_SUBADR2 = 0x0f;  // default: 0x94 (8-bit addr)
-const uint8_t IS31FL3218_REG_SUBADR3 = 0x10;  // default: 0x98 (8-bit addr)
-// All call address register
-const uint8_t IS31FL3218_REG_ALLCALLADR = 0x11;  // default: 0xd0 (8-bit addr)
-
-// --- Output modes ---
-static const uint8_t LDR_OFF = 0x00;
-static const uint8_t LDR_ON = 0x01;
-static const uint8_t LDR_PWM = 0x02;
-static const uint8_t LDR_GRPPWM = 0x03;
+// --- Channel Control Register Values ---
+const uint8_t IS31FL3218_CHANNEL_OFF = 0x00;
+const uint8_t IS31FL3218_CHANNEL_ON = 0x01;
 
 void IS31FL3218Output::setup() {
   ESP_LOGCONFIG(TAG, "Running setup");
 
-  ESP_LOGV(TAG, "  Resetting all devices on the bus");
-
-  // Reset all devices on the bus
-  if (this->bus_->write(IS31FL3218_SWRST_ADDR >> 1, IS31FL3218_SWRST_SEQ, 2) != i2c::ERROR_OK) {
-    ESP_LOGE(TAG, "RESET failed");
+  // Software reset
+  if (!this->write_byte(IS31FL3218_REG_RESET, IS31FL3218_RESET_COMMAND)) {
+    ESP_LOGE(TAG, "Reset failed");
+    this->mark_failed();
+    return;
+  }
+  
+  // Set to normal operation mode
+  if (!this->write_byte(IS31FL3218_REG_SHUTDOWN, IS31FL3218_NORMAL_MODE)) {
+    ESP_LOGE(TAG, "Failed to set normal mode");
     this->mark_failed();
     return;
   }
 
-  // Auto increment registers, and respond to all-call address
-  if (!this->write_byte(IS31FL3218_REG_MODE1, IS31FL3218_MODE1_AI2 | IS31FL3218_MODE1_ALLCALL)) {
-    ESP_LOGE(TAG, "MODE1 failed");
+  // Enable all channels in the control register 1
+  if (!this->write_bytes(IS31FL3218_REG_CONTROL_1, 0x3F)) {
+    ESP_LOGE(TAG, "Failed to set control register 1");
     this->mark_failed();
     return;
   }
-  if (!this->write_byte(IS31FL3218_REG_MODE2, this->mode_)) {
-    ESP_LOGE(TAG, "MODE2 failed");
-    this->mark_failed();
-    return;
-  }
-  // Set all 3 outputs to be individually controlled
-  // TODO: think of a way to support group dimming
-  if (!this->write_byte(IS31FL3218_REG_LEDOUT0, (LDR_PWM << 6) | (LDR_PWM << 4) | (LDR_PWM << 2) | (LDR_PWM << 0))) {
-    ESP_LOGE(TAG, "LEDOUT0 failed");
-    this->mark_failed();
-    return;
-  }
-  if (!this->write_byte(IS31FL3218_REG_LEDOUT1, (LDR_PWM << 6) | (LDR_PWM << 4) | (LDR_PWM << 2) | (LDR_PWM << 0))) {
-    ESP_LOGE(TAG, "LEDOUT1 failed");
-    this->mark_failed();
-    return;
-  }
-  delayMicroseconds(500);
 
-  this->loop();
+  // Enable all channels in the control register 2
+  if (!this->write_bytes(IS31FL3218_REG_CONTROL_2, 0x3F)) {
+    ESP_LOGE(TAG, "Failed to set control register 1");
+    this->mark_failed();
+    return;
+  }
+
+  // Enable all channels in the control register 3
+  if (!this->write_bytes(IS31FL3218_REG_CONTROL_3, 0x3F)) {
+    ESP_LOGE(TAG, "Failed to set control register 1");
+    this->mark_failed();
+    return;
+  }
+
+  // Initialize all PWM values to 0
+  for (uint8_t i = 0; i < 18; i++) {
+    if (!this->write_byte(0x01 + i, 0)) {
+      ESP_LOGE(TAG, "Failed to initialize channel %d", i);
+      this->mark_failed();
+      return;
+    }
+  }
+
+  // Update the register to apply changes
+  if (!this->write_byte(IS31FL3218_REG_UPDATE, IS31FL3218_UPDATE_COMMAND)) {
+    ESP_LOGE(TAG, "Failed to update register");
+    this->mark_failed();
+    return;
+  }
+
+  ESP_LOGCONFIG(TAG, "IS31FL3218 initialized successfully");
+  
+  //this->loop();
 }
 
-void IS31FL3218Output::dump_config() {
-  ESP_LOGCONFIG(TAG,
-                "IS31FL3218:\n"
-                "  Mode: 0x%02X",
-                this->mode_);
+void IS31FL3218Output::dump_config()
+{
+  ESP_LOGCONFIG(TAG, "IS31FL3218:");
+  LOG_I2C_DEVICE(this);
 
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Setting up IS31FL3218 failed!");
@@ -125,32 +99,53 @@ void IS31FL3218Output::loop() {
   if (this->min_channel_ == 0xFF || !this->update_)
     return;
 
+  // Write PWM values for all changed channels
   for (uint8_t channel = this->min_channel_; channel <= this->max_channel_; channel++) {
     uint8_t pwm = this->pwm_amounts_[channel];
-    ESP_LOGVV(TAG, "Channel %02u: pwm=%04u ", channel, pwm);
+    ESP_LOGVV(TAG, "Setting channel %d to PWM value %d", channel, pwm);
 
-    uint8_t reg = IS31FL3218_REG_PWM0 + channel;
-    if (!this->write_byte(reg, pwm)) {
+    if (!this->write_byte(0x01 + channel, pwm)) {
+      ESP_LOGE(TAG, "Failed to write PWM value for channel %d", channel);
       this->status_set_warning();
       return;
     }
   }
 
+  // Update the register to apply all changes
+  if (!this->write_byte(IS31FL3218_REG_UPDATE, IS31FL3218_UPDATE_COMMAND)) {
+    ESP_LOGE(TAG, "Failed to update register");
+    this->status_set_warning();
+    return;
+  }
+
   this->status_clear_warning();
   this->update_ = false;
+
 }
 
 void IS31FL3218Output::register_channel(IS31FL3218Channel *channel) {
   auto c = channel->channel_;
+  if (c >= 18) {
+    ESP_LOGE(TAG, "Channel %d is out of range (0-17)", c);
+    return;
+  }
+
   this->min_channel_ = std::min(this->min_channel_, c);
   this->max_channel_ = std::max(this->max_channel_, c);
   channel->set_parent(this);
 }
 
 void IS31FL3218Channel::write_state(float state) {
+  if (this->channel_ >= 18) {
+    ESP_LOGE(TAG, "Channel %d is out of range", this->channel_);
+    return;
+  }
+
   const uint8_t max_duty = 255;
   const float duty_rounded = roundf(state * max_duty);
   auto duty = static_cast<uint8_t>(duty_rounded);
+
+  ESP_LOGVV(TAG, "Channel %d: state=%.3f, duty=%d", this->channel_, state, duty);
   this->parent_->set_channel_value_(this->channel_, duty);
 }
 

@@ -14,7 +14,7 @@ CONFIG_SCHEMA = output.FLOAT_OUTPUT_SCHEMA.extend(
     {
         cv.Required(CONF_ID): cv.declare_id(IS31FL3218Channel),
         cv.GenerateID(CONF_IS31FL3218_ID): cv.use_id(IS31FL3218Output),
-        cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=7),
+        cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=17),
     }
 )
 
