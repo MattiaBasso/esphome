@@ -9,16 +9,16 @@ namespace esphome {
 namespace is31fl3218 {
 
 // 0*: Group dimming, 1: Group blinking
-extern const uint8_t TLC59208F_MODE2_DMBLNK;
+extern const uint8_t IS31FL3218_MODE2_DMBLNK;
 // 0*: Output change on Stop command, 1: Output change on ACK
-extern const uint8_t TLC59208F_MODE2_OCH;
+extern const uint8_t IS31FL3218_MODE2_OCH;
 // 0*: WDT disabled, 1: WDT enabled
-extern const uint8_t TLC59208F_MODE2_WDTEN;
+extern const uint8_t IS31FL3218_MODE2_WDTEN;
 // WDT timeouts
-extern const uint8_t TLC59208F_MODE2_WDT_5MS;
-extern const uint8_t TLC59208F_MODE2_WDT_15MS;
-extern const uint8_t TLC59208F_MODE2_WDT_25MS;
-extern const uint8_t TLC59208F_MODE2_WDT_35MS;
+extern const uint8_t IS31FL3218_MODE2_WDT_5MS;
+extern const uint8_t IS31FL3218_MODE2_WDT_15MS;
+extern const uint8_t IS31FL3218_MODE2_WDT_25MS;
+extern const uint8_t IS31FL3218_MODE2_WDT_35MS;
 
 class IS31FL3218Output;
 
@@ -34,10 +34,10 @@ class IS31FL3218Channel : public output::FloatOutput, public Parented<IS31FL3218
   uint8_t channel_;
 };
 
-/// TLC59208F float output component.
+/// IS31FL3218 float output component.
 class IS31FL3218Output : public Component, public i2c::I2CDevice {
  public:
-  IS31FL3218Output(uint8_t mode = TLC59208F_MODE2_OCH) : mode_(mode) {}
+  IS31FL3218Output(uint8_t mode = IS31FL3218_MODE2_OCH) : mode_(mode) {}
 
   void register_channel(IS31FL3218Channel *channel);
 
@@ -65,5 +65,5 @@ class IS31FL3218Output : public Component, public i2c::I2CDevice {
   bool update_{true};
 };
 
-}  // namespace tlc59208f
+}  // namespace is31fl3218
 }  // namespace esphome
