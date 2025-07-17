@@ -6,7 +6,7 @@
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
-namespace tlc59208f {
+namespace is31fl3218 {
 
 // 0*: Group dimming, 1: Group blinking
 extern const uint8_t TLC59208F_MODE2_DMBLNK;
@@ -20,14 +20,14 @@ extern const uint8_t TLC59208F_MODE2_WDT_15MS;
 extern const uint8_t TLC59208F_MODE2_WDT_25MS;
 extern const uint8_t TLC59208F_MODE2_WDT_35MS;
 
-class TLC59208FOutput;
+class IS31FL3218Output;
 
-class TLC59208FChannel : public output::FloatOutput, public Parented<TLC59208FOutput> {
+class IS31FL3218Channel : public output::FloatOutput, public Parented<IS31FL3218Output> {
  public:
   void set_channel(uint8_t channel) { channel_ = channel; }
 
  protected:
-  friend class TLC59208FOutput;
+  friend class IS31FL3218Output;
 
   void write_state(float state) override;
 
@@ -35,11 +35,11 @@ class TLC59208FChannel : public output::FloatOutput, public Parented<TLC59208FOu
 };
 
 /// TLC59208F float output component.
-class TLC59208FOutput : public Component, public i2c::I2CDevice {
+class IS31FL3218Output : public Component, public i2c::I2CDevice {
  public:
-  TLC59208FOutput(uint8_t mode = TLC59208F_MODE2_OCH) : mode_(mode) {}
+  IS31FL3218Output(uint8_t mode = TLC59208F_MODE2_OCH) : mode_(mode) {}
 
-  void register_channel(TLC59208FChannel *channel);
+  void register_channel(IS31FL3218Channel *channel);
 
   void setup() override;
   void dump_config() override;
@@ -47,7 +47,7 @@ class TLC59208FOutput : public Component, public i2c::I2CDevice {
   void loop() override;
 
  protected:
-  friend TLC59208FChannel;
+  friend IS31FL3218Channel;
 
   void set_channel_value_(uint8_t channel, uint8_t value) {
     if (this->pwm_amounts_[channel] != value)

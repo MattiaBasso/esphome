@@ -6,13 +6,13 @@ from esphome.const import CONF_ID
 DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
 
-tlc59208f_ns = cg.esphome_ns.namespace("tlc59208f")
-TLC59208FOutput = tlc59208f_ns.class_("TLC59208FOutput", cg.Component, i2c.I2CDevice)
+is31fl3218_ns = cg.esphome_ns.namespace("is31fl3218")
+IS31FL3218Output = is31fl3218_ns.class_("IS31FL3218Output", cg.Component, i2c.I2CDevice)
 
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(TLC59208FOutput),
+            cv.GenerateID(): cv.declare_id(IS31FL3218Output),
         }
     )
     .extend(cv.COMPONENT_SCHEMA)

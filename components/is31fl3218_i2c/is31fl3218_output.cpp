@@ -1,12 +1,12 @@
-#include "tlc59208f_output.h"
+#include "is31fl3218_output.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace tlc59208f {
+namespace is31fl3218 {
 
-static const char *const TAG = "tlc59208f";
+static const char *const TAG = "is31fl3218";
 
 // * marks register defaults
 // 0*: Register auto increment disabled, 1: Register auto increment enabled
@@ -70,7 +70,7 @@ static const uint8_t LDR_ON = 0x01;
 static const uint8_t LDR_PWM = 0x02;
 static const uint8_t LDR_GRPPWM = 0x03;
 
-void TLC59208FOutput::setup() {
+void IS31FL3218Output::setup() {
   ESP_LOGCONFIG(TAG, "Running setup");
 
   ESP_LOGV(TAG, "  Resetting all devices on the bus");
@@ -110,7 +110,7 @@ void TLC59208FOutput::setup() {
   this->loop();
 }
 
-void TLC59208FOutput::dump_config() {
+void IS31FL3218Output::dump_config() {
   ESP_LOGCONFIG(TAG,
                 "TLC59208F:\n"
                 "  Mode: 0x%02X",
@@ -121,7 +121,7 @@ void TLC59208FOutput::dump_config() {
   }
 }
 
-void TLC59208FOutput::loop() {
+void IS31FL3218Output::loop() {
   if (this->min_channel_ == 0xFF || !this->update_)
     return;
 
@@ -140,19 +140,19 @@ void TLC59208FOutput::loop() {
   this->update_ = false;
 }
 
-void TLC59208FOutput::register_channel(TLC59208FChannel *channel) {
+void IS31FL3218Output::register_channel(IS31FL3218Channel *channel) {
   auto c = channel->channel_;
   this->min_channel_ = std::min(this->min_channel_, c);
   this->max_channel_ = std::max(this->max_channel_, c);
   channel->set_parent(this);
 }
 
-void TLC59208FChannel::write_state(float state) {
+void IS31FL3218Channel::write_state(float state) {
   const uint8_t max_duty = 255;
   const float duty_rounded = roundf(state * max_duty);
   auto duty = static_cast<uint8_t>(duty_rounded);
   this->parent_->set_channel_value_(this->channel_, duty);
 }
 
-}  // namespace tlc59208f
+}  // namespace is31fl3218
 }  // namespace esphome
