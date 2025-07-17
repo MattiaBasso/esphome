@@ -4,11 +4,11 @@ from esphome.components import i2c
 from esphome.const import CONF_ID
 
 DEPENDENCIES = ["i2c"]
+MULTI_CONF = True
 
 is31fl3218_ns = cg.esphome_ns.namespace("is31fl3218")
-IS31FL3218 = is31fl3218_ns.class_(
-    "IS31FL3218", cg.Component, i2c.I2CDevice
-)
+IS31FL3218 = is31fl3218_ns.class_("IS31FL3218", cg.Component, i2c.I2CDevice)
+IS31FL3218Channel = is31fl3218_ns.class_("IS31FL3218Channel", output.FloatOutput)
 
 MULTI_CONF = True
 CONFIG_SCHEMA = (

@@ -30,9 +30,9 @@ void IS31FL3218::setup() {
         return;
     }
 
-    if ((this->write(&LED_CTRL_REG_1, LDR_ON) != i2c::ERROR_OK) && 
-       (this->write(&LED_CTRL_REG_2, LDR_ON) != i2c::ERROR_OK) && 
-       (this->write(&LED_CTRL_REG_3, LDR_ON) != i2c::ERROR_OK)){
+    if ((this->write(&LED_CTRL_REG_1, &LDR_ON) != i2c::ERROR_OK) && 
+       (this->write(&LED_CTRL_REG_2, &LDR_ON) != i2c::ERROR_OK) && 
+       (this->write(&LED_CTRL_REG_3, &LDR_ON) != i2c::ERROR_OK)){
         this->mark_failed(); // Mark the component as failed if communication fails
         return;
     }    
