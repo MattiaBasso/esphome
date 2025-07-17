@@ -45,21 +45,21 @@ void IS31FL3218Output::setup() {
   }
 
   // Enable all channels in the control register 1
-  if (!this->write_bytes(IS31FL3218_REG_CONTROL_1, IS31FL3218_CHANNEL_REGISTER_ON)) {
+  if (!this->write_bytes(IS31FL3218_REG_CONTROL_1, &IS31FL3218_CHANNEL_REGISTER_ON)) {
     ESP_LOGE(TAG, "Failed to set control register 1");
     this->mark_failed();
     return;
   }
 
   // Enable all channels in the control register 2
-  if (!this->write_bytes(IS31FL3218_REG_CONTROL_2, IS31FL3218_CHANNEL_REGISTER_ON)) {
+  if (!this->write_bytes(IS31FL3218_REG_CONTROL_2, &IS31FL3218_CHANNEL_REGISTER_ON)) {
     ESP_LOGE(TAG, "Failed to set control register 1");
     this->mark_failed();
     return;
   }
 
   // Enable all channels in the control register 3
-  if (!this->write_bytes(IS31FL3218_REG_CONTROL_3, IS31FL3218_CHANNEL_REGISTER_ON)) {
+  if (!this->write_bytes(IS31FL3218_REG_CONTROL_3, &IS31FL3218_CHANNEL_REGISTER_ON)) {
     ESP_LOGE(TAG, "Failed to set control register 1");
     this->mark_failed();
     return;
