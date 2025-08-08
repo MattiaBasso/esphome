@@ -1,0 +1,1 @@
+# Empty __init__.py file for MAX9860 component
