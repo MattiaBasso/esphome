@@ -33,10 +33,9 @@ void MAX9860Component::setup() {
   this->write_byte(REG_AUD_INT_B, 0x00);
 
   // 4. DAC Attenuation (0x09)
-  // 0x00 = 0dB (Max Volume)
-  // 0x06 = -6dB
-  // 0x0A = -10dB
-  this->write_byte(REG_DAC_ATTEN, 0x06); // Set to -6dB
+  // We now use the variable configured in YAML
+  ESP_LOGD(TAG, "Setting Hardware Volume to: 0x%02X", this->startup_volume_);
+  this->write_byte(REG_DAC_ATTEN, this->startup_volume_);
 
   // 5. System Clock (0x03)
   // Enable clock functionality if needed. 
