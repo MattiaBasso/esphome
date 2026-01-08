@@ -20,7 +20,7 @@ void MAX9860Component::setup() {
   // We keep DAC disabled for now (bit 3 = 0).
   // 0x80 = 1000 0000
   this->write_byte(REG_PWR_MAN, 0x80);
-  delay(10); // Wait for wake up
+  //delay(10); // Wait for wake up
 
   // 2. Interface Control A (0x06)
   // Bit 7 (Master/Slave): 0 = Slave (ESP32 is Master)
