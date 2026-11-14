@@ -13,7 +13,7 @@ potrebbero non compilare o comportarsi diversamente (vedi i rispettivi README).
 ```yaml
 external_components:
   - source: github://MattiaBasso/esphome@<tag>
-    components: [i2s_audio, is31fl3218, max9860, voice_assistant]
+    components: [i2s_audio, is31fl3218, max9860, vimar_leds, voice_assistant]
 ```
 
 Conviene indicare sempre un tag (o un commit) e non il branch, così una compilazione usa
@@ -83,6 +83,19 @@ slave), così la wake word funziona anche durante la riproduzione. Dettagli in
 
 Copia del componente ufficiale con l'opzione `response_start_timeout` (default `2s`, come
 l'originale). Dettagli in [components/voice_assistant/README.md](components/voice_assistant/README.md).
+
+### `vimar_leds`: gamma con tinta costante (solo header)
+
+Funzioni per le lambda degli effetti LED (da usare su una light con `gamma_correct: 1.0`): la gamma
+si applica al colore intero invece che a ogni canale, così a bassa luminosità la tinta non cambia.
+Basta la chiave vuota nello YAML, senza `esphome: includes:`.
+
+```yaml
+vimar_leds:
+
+# nelle lambda: vimar_leds::dim(colore, k, luminosità), vimar_leds::dim_visible(...),
+# vimar_leds::base_color(id(una_light))
+```
 
 ### `es8311`
 
