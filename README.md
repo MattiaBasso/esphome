@@ -4,9 +4,10 @@ Componenti esterni per [ESPHome](https://esphome.io) usati per trasformare il co
 Vimar 03975/30815 (nato per Alexa) in un satellite vocale di Home Assistant, con un ESP32-S3
 collegato alla scheda audio/UI originale (codec MAX9860, driver LED IS31FL3218).
 
-Versione di ESPHome di riferimento: **2026.10.2**. `i2s_audio` e `voice_assistant` sono copie
-dei componenti ufficiali di quella versione con piccole modifiche: con altre versioni di ESPHome
-potrebbero non compilare o comportarsi diversamente (vedi i rispettivi README).
+Versione di ESPHome di riferimento: **2026.11.0**. `i2s_audio` e `voice_assistant` sono copie
+dei componenti ufficiali di 2026.10.2 con piccole modifiche, adattate alle API di 2026.11.0: con
+altre versioni di ESPHome potrebbero non compilare o comportarsi diversamente (vedi i rispettivi
+README).
 
 ## Uso
 

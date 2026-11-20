@@ -11,6 +11,8 @@ class IS31FL3218Light final : public light::AddressableLight, public Parented<IS
  public:
   static constexpr uint8_t MAX_LEDS = IS31FL3218_NUM_CHANNELS / 3;
 
+  IS31FL3218Light() { this->accessor_ = &this->color_accessor_; }
+
   void add_led(uint8_t red, uint8_t green, uint8_t blue);
 
   int32_t size() const override { return this->num_leds_; }
@@ -21,12 +23,13 @@ class IS31FL3218Light final : public light::AddressableLight, public Parented<IS
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
 
  protected:
-  light::ESPColorView get_view_internal(int32_t index) const override;
-
   uint8_t num_leds_{0};
-  uint8_t channels_[MAX_LEDS][3]{};      // R, G, B channel of each pixel
-  mutable uint8_t buf_[MAX_LEDS][3]{};   // R, G, B value (already gamma corrected)
-  mutable uint8_t effect_data_[MAX_LEDS]{};
+  uint8_t channels_[MAX_LEDS][3]{};  // R, G, B channel of each pixel
+  uint8_t buf_[MAX_LEDS][3]{};       // R, G, B value (already gamma corrected)
+  uint8_t effect_data_[MAX_LEDS]{};
+  // Pixel access for AddressableLight: corrects on write, uncorrects on read
+  light::CorrectedBufferColorAccessor color_accessor_{&this->buf_[0][0], this->effect_data_,
+                                                      light::ChannelColors(0, 1, 2), &this->correction_};
 };
 
 }  // namespace esphome::is31fl3218

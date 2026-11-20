@@ -34,11 +34,6 @@ void IS31FL3218Light::clear_effect_data() {
     d = 0;
 }
 
-light::ESPColorView IS31FL3218Light::get_view_internal(int32_t index) const {
-  uint8_t *px = this->buf_[index];
-  return {px + 0, px + 1, px + 2, nullptr, &this->effect_data_[index], &this->correction_};
-}
-
 void IS31FL3218Light::dump_config() {
   ESP_LOGCONFIG(TAG, "IS31FL3218 light: %u LED", this->num_leds_);
   for (uint8_t i = 0; i < this->num_leds_; i++) {
