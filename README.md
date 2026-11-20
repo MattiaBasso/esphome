@@ -4,18 +4,36 @@ Componenti esterni per [ESPHome](https://esphome.io) usati per trasformare il co
 Vimar 03975/30815 (nato per Alexa) in un satellite vocale di Home Assistant, con un ESP32-S3
 collegato alla scheda audio/UI originale (codec MAX9860, driver LED IS31FL3218).
 
-Versione di ESPHome di riferimento: **2026.11.0**. `i2s_audio` e `voice_assistant` sono copie
-dei componenti ufficiali di 2026.10.2 con piccole modifiche, adattate alle API di 2026.11.0: con
-altre versioni di ESPHome potrebbero non compilare o comportarsi diversamente (vedi i rispettivi
-README).
+Versione di ESPHome di riferimento: **2026.11.0**.
 
 ## Uso
 
 ```yaml
 external_components:
   - source: github://MattiaBasso/esphome@<tag>
-    components: [i2s_audio, is31fl3218, max9860, vimar_leds, voice_assistant]
+    components: [is31fl3218, max9860, vimar_leds]
 ```
+
+`i2s_audio` e `voice_assistant` non servono più: da ESPHome 2026.11.0 il Vimar usa quelli ufficiali.
+Le copie locali sono nei tag fino a `v2026.11.20.1`.
+
+- `voice_assistant`: `tts_playback_start_timeout` al posto di `response_start_timeout`.
+- `i2s_audio`: `full_duplex: true` ufficiale. Il MAX9860 vuole MCLK ≥ 10 MHz, quindi a 16 kHz serve
+  `mclk_multiple` 768, che lo schema non accetta (arriva a 512). Si mette 512 su microfono e speaker e si
+  imposta il 768 da un `on_boot` che gira prima del setup del bus (priorità 600):
+
+  ```yaml
+  esphome:
+    on_boot:
+      - priority: 700
+        then:
+          - lambda: |-
+              id(i2s_mic)->set_mclk_multiple(I2S_MCLK_MULTIPLE_768);
+              id(i2s_spk)->set_mclk_multiple(I2S_MCLK_MULTIPLE_768);
+  ```
+
+  L'ufficiale ferma i clock quando microfono e speaker sono fermi tutti e due: il MAX9860 si sgancia e si
+  riaggancia alla ripartenza (provato 31 volte su 31).
 
 Conviene indicare sempre un tag (o un commit) e non il branch, così una compilazione usa
 esattamente la versione provata.
@@ -66,21 +84,6 @@ light:
       - { red: 7, green: 8, blue: 6 }
       - { red: 10, green: 11, blue: 9 }
 ```
-
-### `i2s_audio`: I²S con full-duplex
-
-Copia del componente ufficiale con l'opzione `full_duplex: true`: microfono e altoparlante
-condividono la stessa porta I²S (il microfono è il master dei clock, lo speaker si aggancia come
-slave), così la wake word funziona anche durante la riproduzione. Dettagli in
-[components/i2s_audio/README.md](components/i2s_audio/README.md). ESPHome 2026.11.0 ha un
-`full_duplex` ufficiale, ma non accetta `mclk_multiple: 768` (vedi il README del componente).
-
-### `voice_assistant`: timeout della risposta configurabile
-
-Copia del componente ufficiale con l'opzione `response_start_timeout` (default `2s`, come
-l'originale). Dettagli in [components/voice_assistant/README.md](components/voice_assistant/README.md).
-ESPHome 2026.11.0 ha l'equivalente ufficiale `tts_playback_start_timeout` (vedi il README del
-componente).
 
 ### `vimar_leds`: gamma con tinta costante (solo header)
 
