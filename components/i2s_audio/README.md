@@ -53,4 +53,19 @@ Dettagli in `PROGETTO.md` e in `docs/superpowers/specs/2026-11-14-i2s-full-duple
 
 Ricopiare i file della nuova versione di `i2s_audio` e riapplicare le modifiche. Sono in
 `__init__.py`, `i2s_audio.h`, `microphone/i2s_audio_microphone.{h,cpp}` e
-`speaker/i2s_audio_speaker{.h,.cpp,_standard.cpp}`.
+`speaker/i2s_audio_speaker{.h,.cpp,_standard.cpp}`. Tutti gli altri file sono identici a 2026.10.2.
+Con 2026.11.0 è cambiata anche l'API dei DAC dello speaker (`audio_dacs_`, `has_audio_dac_()`).
+
+## Stato in ESPHome 2026.11.0
+
+L'ufficiale ora ha `full_duplex: true` (esphome#19959). Il design è simile a questo: RX e TX non
+vengono mai cancellati e l'RX guida i clock. La copia resta per due motivi:
+
+- `mclk_multiple` ufficiale arriva a 512, quindi a 16 kHz l'MCLK massimo è 8,192 MHz, sotto i
+  10 MHz che il MAX9860 richiede. ESP-IDF ha `I2S_MCLK_MULTIPLE_768`, ma nessuna PR o issue upstream
+  lo chiede (verificato il 2026-11-20).
+- L'implementazione è diversa: i canali vengono creati nel setup del bus, l'RX si spegne quando
+  microfono e speaker sono fermi e il formato è fisso. Il passaggio va provato sulla scheda.
+
+Da seguire: esphome#21107 (`keep_tx_active`) ed esphome#22164 (`keep_alive` dei clock), tutte e due
+aperte.

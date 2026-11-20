@@ -1,8 +1,6 @@
 #include "is31fl3218.h"
 #include "esphome/core/log.h"
 
-#include <cmath>
-
 namespace esphome::is31fl3218 {
 
 static const char *const TAG = "is31fl3218";
@@ -65,19 +63,12 @@ void IS31FL3218::loop() {
   this->disable_loop();
 }
 
-void IS31FL3218::register_channel(IS31FL3218Channel *channel) { channel->set_parent(this); }
-
 void IS31FL3218::set_channel_value(uint8_t channel, uint8_t value) {
   if (channel >= IS31FL3218_NUM_CHANNELS || this->pwm_[channel] == value)
     return;
   this->pwm_[channel] = value;
   this->dirty_mask_ |= 1UL << channel;
   this->enable_loop();
-}
-
-void IS31FL3218Channel::write_state(float state) {
-  const auto duty = static_cast<uint8_t>(std::lround(clamp(state, 0.0f, 1.0f) * 255.0f));
-  this->parent_->set_channel_value(this->channel_, duty);
 }
 
 }  // namespace esphome::is31fl3218

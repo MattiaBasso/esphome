@@ -1,7 +1,6 @@
 """ISSI IS31FL3218: 18-channel 8-bit PWM LED driver (I2C, fixed address 0x54).
 
-Hub component. Platforms: ``output`` (one channel, see ``output.py``) and ``light`` (addressable RGB
-pixels made of three channels each, see ``light/``).
+Hub component. Platform: ``light`` (addressable RGB pixels made of three channels each, see ``light/``).
 """
 
 from esphome import pins

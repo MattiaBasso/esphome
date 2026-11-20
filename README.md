@@ -58,13 +58,7 @@ is31fl3218:
     i2c_id: i2c_ui
     enable_pin: GPIOxx          # facoltativo: SDB (spegnimento hardware, attivo basso)
 
-# Un canale come uscita singola
-output:
-  - platform: is31fl3218
-    id: ch0
-    channel: 0                  # 0-17
-
-# Oppure LED RGB indirizzabili (tre canali ciascuno), compatibili con effetti e partition
+# LED RGB indirizzabili (tre canali ciascuno, 0-17), compatibili con effetti e partition
 light:
   - platform: is31fl3218
     id: ring
@@ -78,12 +72,15 @@ light:
 Copia del componente ufficiale con l'opzione `full_duplex: true`: microfono e altoparlante
 condividono la stessa porta I²S (il microfono è il master dei clock, lo speaker si aggancia come
 slave), così la wake word funziona anche durante la riproduzione. Dettagli in
-[components/i2s_audio/README.md](components/i2s_audio/README.md).
+[components/i2s_audio/README.md](components/i2s_audio/README.md). ESPHome 2026.11.0 ha un
+`full_duplex` ufficiale, ma non accetta `mclk_multiple: 768` (vedi il README del componente).
 
 ### `voice_assistant`: timeout della risposta configurabile
 
 Copia del componente ufficiale con l'opzione `response_start_timeout` (default `2s`, come
 l'originale). Dettagli in [components/voice_assistant/README.md](components/voice_assistant/README.md).
+ESPHome 2026.11.0 ha l'equivalente ufficiale `tts_playback_start_timeout` (vedi il README del
+componente).
 
 ### `vimar_leds`: gamma con tinta costante (solo header)
 
@@ -97,7 +94,3 @@ vimar_leds:
 # nelle lambda: vimar_leds::dim(colore, k, luminosità), vimar_leds::dim_visible(...),
 # vimar_leds::base_color(id(una_light))
 ```
-
-### `es8311`
-
-Componente di un progetto precedente, non usato dal Vimar.

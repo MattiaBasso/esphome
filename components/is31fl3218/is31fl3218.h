@@ -1,7 +1,6 @@
 #pragma once
 
 #include "esphome/components/i2c/i2c.h"
-#include "esphome/components/output/float_output.h"
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/helpers.h"
@@ -22,19 +21,6 @@ inline constexpr uint8_t IS31FL3218_REG_RESET = 0x17;     // write any value: re
 inline constexpr uint8_t IS31FL3218_NORMAL_OPERATION = 0x01;
 inline constexpr uint8_t IS31FL3218_LED_CTRL_ALL_ON = 0x3F;
 
-class IS31FL3218;
-
-class IS31FL3218Channel final : public output::FloatOutput, public Parented<IS31FL3218> {
- public:
-  void set_channel(uint8_t channel) { this->channel_ = channel; }
-  uint8_t get_channel() const { return this->channel_; }
-
- protected:
-  void write_state(float state) override;
-
-  uint8_t channel_{0};
-};
-
 class IS31FL3218 final : public Component, public i2c::I2CDevice {
  public:
   void setup() override;
@@ -43,7 +29,6 @@ class IS31FL3218 final : public Component, public i2c::I2CDevice {
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
 
   void set_enable_pin(GPIOPin *pin) { this->enable_pin_ = pin; }
-  void register_channel(IS31FL3218Channel *channel);
   /// Store a new PWM value; the I2C write happens in the next loop() (batched with the update latch)
   void set_channel_value(uint8_t channel, uint8_t value);
 
